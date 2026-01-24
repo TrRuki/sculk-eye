@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "sculk_eye:block/sculk_eye",
+      "x": 90
+    },
+    "facing=east": {
+      "model": "sculk_eye:block/sculk_eye",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "sculk_eye:block/sculk_eye"
+    },
+    "facing=south": {
+      "model": "sculk_eye:block/sculk_eye",
+      "y": 180
+    },
+    "facing=up": {
+      "model": "sculk_eye:block/sculk_eye",
+      "x": 270
+    },
+    "facing=west": {
+      "model": "sculk_eye:block/sculk_eye",
+      "y": 270
+    }
+  }
+}
