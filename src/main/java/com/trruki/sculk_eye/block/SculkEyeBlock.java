@@ -84,6 +84,6 @@ public class SculkEyeBlock extends BaseEntityBlock {
 
     @Override
     protected int getSignal(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos, Direction direction) {
-        return blockState.getValue(POWER);
+        return direction.equals(blockState.getValue(FACING)) ? blockState.getValue(POWER) : 0;
     }
 }
