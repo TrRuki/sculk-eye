@@ -11,7 +11,6 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import org.jetbrains.annotations.NotNull;
@@ -20,8 +19,8 @@ import java.util.function.Function;
 
 public class ModBlocks {
     public static final Block SCULK_EYE = register(
-            "sculk_eye",
-            EyeBlock::new,
+            "sculk_eye_block",
+            SculkEyeBlock::new,
             BlockBehaviour.Properties.of().sound(SoundType.SCULK).strength(4f),
             true
     );

@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "sculk_eye:block/sculk_eye"
+    "model": "sculk_eye:block/sculk_eye_block"
   }
 }

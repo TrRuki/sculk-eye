@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "sculk_eye:sculk_eye"
+          "name": "sculk_eye:sculk_eye_block"
         }
       ],
       "conditions": [
