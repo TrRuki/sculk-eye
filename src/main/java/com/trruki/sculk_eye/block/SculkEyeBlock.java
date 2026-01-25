@@ -4,6 +4,8 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -17,6 +19,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.phys.BlockHitResult;
 import org.jspecify.annotations.Nullable;
 
 public class SculkEyeBlock extends BaseEntityBlock {
@@ -85,5 +88,16 @@ public class SculkEyeBlock extends BaseEntityBlock {
     @Override
     protected int getSignal(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos, Direction direction) {
         return direction.equals(blockState.getValue(FACING)) ? blockState.getValue(POWER) : 0;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState blockState, Level level, BlockPos blockPos, Player player, BlockHitResult blockHitResult) {
+        BlockEntity blockEntity = level.getBlockEntity(blockPos);
+        if (!(blockEntity instanceof SculkEyeBlockEntity sculkEyeBlockEntity))
+            return InteractionResult.PASS;
+
+        sculkEyeBlockEntity.setEntityMode(SculkEyeBlockEntity.EntityMode.MOB);
+
+        return InteractionResult.SUCCESS;
     }
 }

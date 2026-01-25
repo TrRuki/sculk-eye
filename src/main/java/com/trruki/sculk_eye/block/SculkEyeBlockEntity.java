@@ -7,24 +7,45 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
 public class SculkEyeBlockEntity extends BlockEntity {
     public enum EntityMode {
-        PLAYER, MOB, CUSTOM
+        PLAYER("player"), MOB("mob"), CUSTOM("custom");
+
+        private final String modeString;
+
+        EntityMode(String  modeString) {
+            this.modeString = modeString;
+        }
+
+        public String getModeString() {
+            return modeString;
+        }
+
+        public static EntityMode fromCode(String modeString) {
+            for (EntityMode em : EntityMode.values()) {
+                if (Objects.equals(em.modeString, modeString)) {
+                    return em;
+                }
+            }
+            return PLAYER;
+        }
     }
 
 
-    private EntityMode entityMode = EntityMode.PLAYER;
-    private int RADIUS = 20;
-    private String customEntityType = "player";
+    EntityMode entityMode = EntityMode.PLAYER;
+    int radius = 20;
+    String customEntityType = "player";
 
     public SculkEyeBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SCULK_EYE_BLOCK_ENTITY, pos, state);
@@ -60,7 +81,7 @@ public class SculkEyeBlockEntity extends BlockEntity {
     }
 
     private int getSignal(ServerLevel level, BlockPos pos) {
-        int entityCount = getEntityCount(level, pos, RADIUS, getEntityPredicate());
+        int entityCount = getEntityCount(level, pos, radius, getEntityPredicate());
         return Math.min(15, entityCount);
     }
 
@@ -69,5 +90,23 @@ public class SculkEyeBlockEntity extends BlockEntity {
         if (serverLevel.getGameTime() % 4 != 0) return;
 
         serverLevel.setBlock(blockPos, blockState.setValue(SculkEyeBlock.POWER, sculkEyeBlockEntity.getSignal(serverLevel, blockPos)), 3);
+    }
+
+    @Override
+    protected void saveAdditional(ValueOutput output) {
+        output.putInt("radius", radius);
+        output.putString("customEntityType", customEntityType);
+        output.putString("entityMode", entityMode.getModeString());
+
+        super.saveAdditional(output);
+    }
+
+    @Override
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+
+        radius = input.getIntOr("radius", radius);
+        customEntityType = input.getStringOr("customEntityType", customEntityType);
+        entityMode = EntityMode.fromCode(input.getStringOr("entityMode", entityMode.getModeString()));
     }
 }
