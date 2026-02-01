@@ -1,6 +1,8 @@
 package com.trruki.sculk_eye.block;
 
 import com.mojang.serialization.MapCodec;
+import com.trruki.sculk_eye.screen.SculkEyeBlockScreen;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -96,7 +98,9 @@ public class SculkEyeBlock extends BaseEntityBlock {
         if (!(blockEntity instanceof SculkEyeBlockEntity sculkEyeBlockEntity))
             return InteractionResult.PASS;
 
-        sculkEyeBlockEntity.setEntityMode(SculkEyeBlockEntity.EntityMode.MOB);
+        if (level.isClientSide()) {
+            Minecraft.getInstance().setScreen(new SculkEyeBlockScreen(sculkEyeBlockEntity));
+        }
 
         return InteractionResult.SUCCESS;
     }

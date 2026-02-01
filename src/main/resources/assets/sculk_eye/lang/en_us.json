@@ -1,3 +1,10 @@
 {
-  "block.sculk_eye.sculk_eye": "Sculk Eye Block"
+  "block.sculk_eye.sculk_eye_block": "Sculk Eye Block",
+  "gui.sculk_eye.entity_mode_player": "Player",
+  "gui.sculk_eye.entity_mode_mob": "Any mob",
+  "gui.sculk_eye.entity_mode_friendly": "Friendly",
+  "gui.sculk_eye.entity_mode_hostile": "Hostile",
+  "gui.sculk_eye.entity_mode_custom": "Custom",
+  "gui.sculk_eye.entity_mode": "Entity mode:",
+  "gui.sculk_eye.custom_entity_type": "Custom entity type:"
 }

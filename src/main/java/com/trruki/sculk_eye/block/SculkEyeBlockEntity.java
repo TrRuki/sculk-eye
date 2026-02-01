@@ -1,10 +1,13 @@
 package com.trruki.sculk_eye.block;
 
+import com.trruki.sculk_eye.util.EntityMode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -19,46 +22,42 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 public class SculkEyeBlockEntity extends BlockEntity {
-    public enum EntityMode {
-        PLAYER("player"), MOB("mob"), CUSTOM("custom");
-
-        private final String modeString;
-
-        EntityMode(String  modeString) {
-            this.modeString = modeString;
-        }
-
-        public String getModeString() {
-            return modeString;
-        }
-
-        public static EntityMode fromCode(String modeString) {
-            for (EntityMode em : EntityMode.values()) {
-                if (Objects.equals(em.modeString, modeString)) {
-                    return em;
-                }
-            }
-            return PLAYER;
-        }
-    }
-
-
     EntityMode entityMode = EntityMode.PLAYER;
     int radius = 20;
-    String customEntityType = "player";
+    String customEntityType = "minecraft:player";
 
     public SculkEyeBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SCULK_EYE_BLOCK_ENTITY, pos, state);
+    }
+
+    public EntityMode getEntityMode(){
+        return this.entityMode;
     }
 
     public void setEntityMode(EntityMode newEntityType){
         this.entityMode = newEntityType;
     }
 
+    public int getRadius() {
+        return this.radius;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
+    }
+
+    public String getCustomEntityType() {
+        return this.customEntityType;
+    }
+
+    public void setCustomEntityType(String customEntityType) {
+        this.customEntityType = customEntityType;
+    }
+
     private Predicate<? super LivingEntity> getEntityPredicate() {
         return switch (this.entityMode) {
             case PLAYER -> e -> {return e.getType() == EntityType.PLAYER;};
-            case MOB -> e -> true;
+            case MOB -> e -> {return e.getType() != EntityType.PLAYER;};
             case CUSTOM -> {
                 Optional<Holder.Reference<EntityType<?>>> entityTypeOptional = BuiltInRegistries.ENTITY_TYPE.get(Identifier.parse(customEntityType));
                 if (entityTypeOptional.isEmpty()) {
@@ -70,6 +69,8 @@ public class SculkEyeBlockEntity extends BlockEntity {
                     };
                 }
             }
+            case HOSTILE -> e -> {return !e.getType().getCategory().isFriendly();};
+            case FRIENDLY -> e -> {return e.getType().getCategory().isFriendly();};
         };
     }
 
@@ -95,8 +96,8 @@ public class SculkEyeBlockEntity extends BlockEntity {
     @Override
     protected void saveAdditional(ValueOutput output) {
         output.putInt("radius", radius);
-        output.putString("customEntityType", customEntityType);
-        output.putString("entityMode", entityMode.getModeString());
+        output.putString("custom_entity", customEntityType);
+        output.putString("entity_mode", entityMode.getName());
 
         super.saveAdditional(output);
     }
@@ -106,7 +107,7 @@ public class SculkEyeBlockEntity extends BlockEntity {
         super.loadAdditional(input);
 
         radius = input.getIntOr("radius", radius);
-        customEntityType = input.getStringOr("customEntityType", customEntityType);
-        entityMode = EntityMode.fromCode(input.getStringOr("entityMode", entityMode.getModeString()));
+        customEntityType = input.getStringOr("custom_entity", customEntityType);
+        entityMode = EntityMode.fromName(input.getStringOr("entity_mode", entityMode.getName()));
     }
 }
