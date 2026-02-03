@@ -3,8 +3,14 @@ package com.trruki.sculk_eye.block;
 import com.trruki.sculk_eye.util.EntityMode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.StringRepresentable;
@@ -21,9 +27,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import static net.minecraft.world.entity.raid.Raids.load;
+
 public class SculkEyeBlockEntity extends BlockEntity {
     EntityMode entityMode = EntityMode.PLAYER;
-    int radius = 20;
+    double radius = 20;
     String customEntityType = "minecraft:player";
 
     public SculkEyeBlockEntity(BlockPos pos, BlockState state) {
@@ -38,11 +46,11 @@ public class SculkEyeBlockEntity extends BlockEntity {
         this.entityMode = newEntityType;
     }
 
-    public int getRadius() {
+    public double getRadius() {
         return this.radius;
     }
 
-    public void setRadius(int radius) {
+    public void setRadius(double radius) {
         this.radius = radius;
     }
 
@@ -95,8 +103,8 @@ public class SculkEyeBlockEntity extends BlockEntity {
 
     @Override
     protected void saveAdditional(ValueOutput output) {
-        output.putInt("radius", radius);
-        output.putString("custom_entity", customEntityType);
+        output.putDouble("radius", radius);
+        output.putString("custom_entity_type", customEntityType);
         output.putString("entity_mode", entityMode.getName());
 
         super.saveAdditional(output);
@@ -106,8 +114,18 @@ public class SculkEyeBlockEntity extends BlockEntity {
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
 
-        radius = input.getIntOr("radius", radius);
-        customEntityType = input.getStringOr("custom_entity", customEntityType);
+        radius = input.getDoubleOr("radius", radius);
+        customEntityType = input.getStringOr("custom_entity_type", customEntityType);
         entityMode = EntityMode.fromName(input.getStringOr("entity_mode", entityMode.getName()));
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registryLookup) {
+        return saveWithoutMetadata(registryLookup);
+    }
+
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 }
