@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SEs",
+    "EeE",
+    "CEc"
+  ],
+  "key": {
+    "S": "minecraft:sculk_sensor",
+    "s": "minecraft:sculk_shrieker",
+    "E": "minecraft:echo_shard",
+    "e": "minecraft:ender_eye",
+    "C": "minecraft:sculk_catalyst",
+    "c": "minecraft:calibrated_sculk_sensor"
+  },
+  "result": {
+    "id": "sculk_eye:sculk_eye_block"
+  }
+}
