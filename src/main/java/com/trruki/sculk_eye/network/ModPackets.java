@@ -68,8 +68,6 @@ public class ModPackets {
                         sculkEyeBlockEntity.getBlockState(),
                         Block.UPDATE_ALL
                 );
-
-                player.displayClientMessage(Component.literal(payload.customEntityType), true);
             });
         });
     }
